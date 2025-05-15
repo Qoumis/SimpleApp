@@ -3,7 +3,6 @@ package com.Qoumis.SimpleApp.model;
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,6 +44,21 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "work_address_id")
     private Address workAddress;
+
+    //JPA requires a no-arg constructor ???
+    public User() {
+        
+    }
+
+    public User(long id, String firstName, String lastName, Gender gender, LocalDate birthDate, Address homeAddress, Address workAddress) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.homeAddress = homeAddress;
+        this.workAddress = workAddress;
+    }
+
 
     public Long getId() {
         return id;

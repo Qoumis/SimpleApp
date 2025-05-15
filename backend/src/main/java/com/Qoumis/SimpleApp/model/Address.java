@@ -1,7 +1,5 @@
 package com.Qoumis.SimpleApp.model;
 
-import java.lang.annotation.Inherited;
-
 import jakarta.persistence.*;
 
 import com.Qoumis.SimpleApp.model.enums.AddressType;
@@ -19,6 +17,16 @@ public class Address {
     private AddressType type; // HOME or WORK
 
     private String fullAddress;
+
+    public Address() {
+    
+    }
+
+    public Address(Long id, AddressType type, String fullAddress) {
+        this.id = id;
+        this.type = type;
+        this.fullAddress = fullAddress;
+    }
 
     public Long getId() {
         return id;
