@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import com.Qoumis.SimpleApp.model.User;
+import com.Qoumis.SimpleApp.model.UserNameDTO;
+
 import org.springframework.http.ResponseEntity;
 
 
@@ -28,6 +30,12 @@ public class ApiController {
     public List<User> getUsers() {
         
         return userRepository.findAll();
+    }
+
+    @GetMapping("/user/all/names")
+    public List<UserNameDTO> getNamesOnly() {
+        
+        return userRepository.findNamesOnly();
     }
 
     @GetMapping("/user/{id}")
