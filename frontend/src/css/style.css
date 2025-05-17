@@ -1,0 +1,25 @@
+body {
+  background-color: rgb(245, 245, 245);
+  justify-content: center;
+  margin: 0 20px 60px 20px;
+
+  transition: all 0.2s ease;
+}
+
+.home-icon {
+  color: rgb(45, 45, 45);
+  font-size: 30px;
+  display: inline-block;
+  margin: 15px auto;
+}
+
+.home-icon:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.home-icon:active {
+  transform: scale(0.9);
+}

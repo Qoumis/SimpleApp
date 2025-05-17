@@ -3,11 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Web App</title>
   </head>
   <body>
+    <header>
+      <a href="#" id="home-btn">
+        <i class="fa-solid fa-house home-icon"></i>
+      </a>
+    </header>
+
     <div id="app"></div>
+
+    <footer></footer>
+
+  <!-- Message Modal-->
+  <div class="modal fade" id="InfoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="InfoModal-label" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="InfoModal-label"></h5>
+          </div>
+          <div class="modal-body" id="InfoModal-msg">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="InfoModal-btn">Okay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/js/main.js"></script>
+    <script src="/src/js/utils.js"></script>
   </body>
 </html>
