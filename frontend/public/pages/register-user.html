@@ -1,0 +1,69 @@
+<h2 class="text-center">Register New User</h2>
+
+<div class="container mt-5" style="max-width: 600px">
+  <form id="registration-form">
+    <div class="mb-3 row">
+      <label for="firstName" class="col-sm-3 col-form-label">
+        <span class="text-danger">*</span> First Name:
+      </label>
+      <div class="col-sm-7">
+        <input type="text" id="firstName" class="form-control" required />
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="lastName" class="col-sm-3 col-form-label">
+        <span class="text-danger">*</span> Last Name:
+      </label>
+      <div class="col-sm-7">
+        <input type="text" id="lastName" class="form-control" required />
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="gender" class="col-sm-3 col-form-label">
+        <span class="text-danger">*</span> Gender:
+      </label>
+      <div class="col-sm-7">
+        <select id="gender" class="form-select">
+          <option value="" disabled selected hidden>Choose Gender</option>
+          <option value="MALE">Male</option>
+          <option value="FEMALE">Female</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="birthdate" class="col-sm-3 col-form-label">
+        <span class="text-danger">*</span> Birthdate:
+      </label>
+      <div class="col-sm-7">
+        <input type="text" id="birthdate" class="form-control" required />
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="homeAddress" class="col-sm-3 col-form-label">
+        &nbsp; Home Address:
+      </label>
+      <div class="col-sm-7">
+        <input type="text" id="homeAddress" class="form-control" />
+      </div>
+    </div>
+
+    <div class="mb-3 row">
+      <label for="workAddress" class="col-sm-3 col-form-label">
+        &nbsp; Work Address:
+      </label>
+      <div class="col-sm-7">
+        <input type="text" id="workAddress" class="form-control" />
+      </div>
+    </div>
+
+    <div class="text-end col-sm-10">
+      <button type="submit" id="register-btn" class="btn btn-primary mt-3">
+        Submit
+      </button>
+    </div>
+  </form>
+</div>
