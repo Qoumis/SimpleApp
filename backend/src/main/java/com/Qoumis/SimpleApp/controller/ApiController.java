@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.Qoumis.SimpleApp.repository.UserRepository;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ import com.Qoumis.SimpleApp.model.UserNameDTO;
 
 import org.springframework.http.ResponseEntity;
 
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api")
 public class ApiController {
