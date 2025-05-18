@@ -115,6 +115,18 @@ function displayUsers() {
   });
 }
 
+//TO DO??
+function openNewTab(id) {
+  window.open(`/user/${id}`, "_blank");
+}
+
+// Display user information
+function showUserInfo(id) {
+  $("#app").load("/pages/user-info.html", function () {
+    //do ajax call here
+  });
+}
+
 //Delete a user from the database
 //This function should be called when the delete button is clicked
 function deleteUser(id) {
@@ -145,10 +157,6 @@ function popDeleteConfrimation(id, firstName, lastName) {
     deleteUser(id);
     $("#DeleteConfirmation").modal("hide");
   });
-}
-
-function showUserInfo(id) {
-  console.log("Showing info for user with ID: " + id);
 }
 
 // Used to pop a modal with a message (mostly when an error occurs)
