@@ -55,10 +55,10 @@ Relational database design (**MySQL**)
 
 ### Backend
 
-cd backend
-./mvnw spring-boot:run
+<pre>$ cd frontend 
+$ npm run dev </pre>
 
 ### Frontend
 
-cd frontend
-npm run dev
+<pre>$ cd frontend
+$ npm run dev</pre>
