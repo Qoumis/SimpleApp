@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import com.Qoumis.SimpleApp.model.User;
 import com.Qoumis.SimpleApp.model.UserNameDTO;
+import com.Qoumis.SimpleApp.model.Address;
 
 import org.springframework.http.ResponseEntity;
 
@@ -27,18 +29,21 @@ public class ApiController {
     @Autowired
     private UserRepository userRepository;
 
+    //Get all users (all fields)
     @GetMapping("/user/all")
     public List<User> getUsers() {
         
         return userRepository.findAll();
     }
 
+    //Get only the names of all users
     @GetMapping("/user/all/names")
     public List<UserNameDTO> getNamesOnly() {
         
         return userRepository.findNamesOnly();
     }
 
+    //Get a user by ID
     @GetMapping("/user/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         
@@ -46,12 +51,46 @@ public class ApiController {
                 .orElse(ResponseEntity.status(404).body("User not found"));
     }
 
+    //Register a new user
     @PostMapping("/user/add")
     public User addUser(@RequestBody User user) {
 
         return userRepository.save(user);
     }
 
+    //Update an existing user
+    @PutMapping("/user/{id}")
+    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable Long id){
+
+        return userRepository.findById(id).<ResponseEntity<?>>
+                map(existingUser ->{
+                    existingUser.setFirstName(user.getFirstName());
+                    existingUser.setLastName(user.getLastName());
+                    existingUser.setGender(user.getGender());
+                    existingUser.setBirthDate(user.getBirthDate());
+
+                    // Update home address
+                    Address oldHome = existingUser.getHomeAddress();
+                    Address newHome = user.getHomeAddress();
+                    if(oldHome != null && newHome != null) // Update existing home address
+                        oldHome.setFullAddress(newHome.getFullAddress()); 
+                    else
+                        existingUser.setHomeAddress(newHome); //replace old (null) with new or clear if new is null
+
+                    // Update work address
+                    Address oldWork = existingUser.getWorkAddress();
+                    Address newWork = user.getWorkAddress();
+                    if(oldWork != null && newWork != null) 
+                        oldWork.setFullAddress(newWork.getFullAddress());
+                    else
+                        existingUser.setWorkAddress(newWork);
+                    
+                    return ResponseEntity.ok(userRepository.save(existingUser));
+                })
+                .orElse(ResponseEntity.status(404).body("User not found"));
+    }
+
+    //Delete a user
     @DeleteMapping("/user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id){
         if (userRepository.existsById(id)) {

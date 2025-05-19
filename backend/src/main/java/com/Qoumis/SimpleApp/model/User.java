@@ -37,11 +37,11 @@ public class User {
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "home_address_id")
     private Address homeAddress;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "work_address_id")
     private Address workAddress;
 
