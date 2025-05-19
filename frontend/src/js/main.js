@@ -7,9 +7,28 @@ import "../css/style.css";
 import $ from "jquery";
 
 window.addEventListener("DOMContentLoaded", () => {
-  $("#app").load("/pages/home.html");
+  routePage();
 });
 
-$(document).on("click", "#home-btn", () => {
-  $("#app").load("/pages/home.html");
+// Handle back/forward navigation
+window.addEventListener("popstate", () => {
+  routePage();
 });
+
+// Load the home page when home button is clicked
+$(document).on("click", "#home-btn", () => {
+  loadHomePaege();
+});
+
+//handle page routing
+function routePage() {
+  const path = window.location.pathname;
+
+  if (path.startsWith("/user/")) {
+    const id = path.split("/")[2];
+
+    showUserInfo(id);
+  } else if (path === "/register") registerUser();
+  else if (path === "/users") displayUsers();
+  else loadHomePaege();
+}

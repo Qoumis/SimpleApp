@@ -2,6 +2,7 @@
 
 // Display registration form for a new user
 function registerUser() {
+  history.pushState({}, "", "/register");
   $("#app").load("/pages/register-user.html", function () {
     $("#birthdate").datepicker({
       dateFormat: "yy-mm-dd",
@@ -46,15 +47,13 @@ $(document).on("submit", "#registration-form", function (event) {
   if (!formData.homeAddress.trim()) {
     formData.homeAddress = null;
   } else {
-    formData.homeAddress = { type: "HOME", FullAddress: formData.homeAddress };
+    formData.homeAddress = { type: "HOME", fullAddress: formData.homeAddress };
   }
   if (!formData.workAddress.trim()) {
     formData.workAddress = null;
   } else {
-    formData.workAddress = { type: "WORK", FullAddress: formData.workAddress };
+    formData.workAddress = { type: "WORK", fullAddress: formData.workAddress };
   }
-
-  console.log("Form data: ", formData);
 
   //all checks passed, send the data to the server
   $.ajax({
@@ -63,7 +62,6 @@ $(document).on("submit", "#registration-form", function (event) {
     contentType: "application/json",
     data: JSON.stringify(formData),
     success: function (data) {
-      console.log(data);
       popInfoMessage("User registered successfully!", "Registration Complete");
       $("#registration-form").trigger("reset"); // empty the form after successful submission
     },
@@ -88,6 +86,7 @@ function isValidDate(dateString) {
 
 // Display registered users in a table
 function displayUsers() {
+  history.pushState({}, "", "/users");
   $("#app").load("/pages/display-users.html", function () {
     $.ajax({
       url: "http://localhost:8080/api/user/all/names",
@@ -98,8 +97,8 @@ function displayUsers() {
         data.forEach((user) => {
           table.append(
             `<tr>
-              <td onclick="showUserInfo(${user.id})">${user.firstName}</td>
-              <td onclick="showUserInfo(${user.id})">${user.lastName}</td>
+              <td onclick="openUserTab(${user.id})">${user.firstName}</td>
+              <td onclick="openUserTab(${user.id})">${user.lastName}</td>
               <td class="text-end"><button class="btn btn-outline-danger" onclick="popDeleteConfrimation(${user.id}, '${user.firstName}', '${user.lastName}')">Delete</button></td>
             </tr>`
           );
@@ -115,15 +114,48 @@ function displayUsers() {
   });
 }
 
-//TO DO??
-function openNewTab(id) {
+// Open a new tab the specified path, router handles the rest
+function openUserTab(id) {
   window.open(`/user/${id}`, "_blank");
 }
 
 // Display user information
 function showUserInfo(id) {
+  history.pushState("", "", `/user/${id}`);
+
+  //in case the user tries to access the page directly with an invalid path parameter
+  if (isNaN(id)) {
+    popInfoMessage("Invalid user ID", "Error 400", true);
+    return;
+  }
+
   $("#app").load("/pages/user-info.html", function () {
-    //do ajax call here
+    $.ajax({
+      url: "http://localhost:8080/api/user/" + id,
+      type: "GET",
+      dataType: "json",
+      success: function (data) {
+        $("#firstName").html(data.firstName);
+        $("#lastName").html(data.lastName);
+
+        if (data.gender === "MALE") $("#gender").html("Male");
+        else $("#gender").html("Female");
+
+        $("#birthDate").html(data.birthDate);
+
+        if (data.homeAddress)
+          $("#homeAddress").html(data.homeAddress.fullAddress);
+        if (data.workAddress)
+          $("#workAddress").html(data.workAddress.fullAddress);
+      },
+      error: function (xhr) {
+        popInfoMessage(
+          "Error while fetching user: " + xhr.responseText,
+          "Error " + xhr.status,
+          true
+        );
+      },
+    });
   });
 }
 
@@ -146,6 +178,11 @@ function deleteUser(id) {
   });
 }
 
+function loadHomePaege() {
+  $("#app").load("/pages/home.html");
+  history.pushState(null, null, "/");
+}
+
 // Pop a modal to confirm deletion of a user
 function popDeleteConfrimation(id, firstName, lastName) {
   $("#DeleteConfirmation-msg").html(
@@ -160,12 +197,16 @@ function popDeleteConfrimation(id, firstName, lastName) {
 }
 
 // Used to pop a modal with a message (mostly when an error occurs)
-function popInfoMessage(message, title = "Error") {
+function popInfoMessage(message, title = "Error", returnToHome = false) {
   $("#InfoModal-msg").html(message);
   $("#InfoModal-label").html(title);
   $("#InfoModal").modal("show");
   $("#InfoModal-btn").off("click");
   $("#InfoModal-btn").on("click", function () {
     $("#InfoModal").modal("hide");
+
+    if (returnToHome) {
+      loadHomePaege();
+    }
   });
 }
