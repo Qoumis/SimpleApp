@@ -20,7 +20,6 @@ import java.util.List;
 import com.Qoumis.SimpleApp.model.User;
 import com.Qoumis.SimpleApp.model.UserNameDTO;
 import com.Qoumis.SimpleApp.model.enums.AddressType;
-import com.Qoumis.SimpleApp.model.Address;
 
 import org.springframework.http.ResponseEntity;
 
@@ -61,7 +60,8 @@ public class ApiController {
     @PostMapping("/user/add")
     public User addUser(@Valid @RequestBody User user) {
 
-        return userRepository.save(user);
+        User sanitizedUser = userService.sanitizeUserInput(user);
+        return userRepository.save(sanitizedUser);
     }
 
     //Update an existing user
@@ -78,7 +78,9 @@ public class ApiController {
                     userService.addressUpdater(existingUser.getHomeAddress(), user.getHomeAddress(), existingUser, AddressType.HOME);
                     userService.addressUpdater(existingUser.getWorkAddress(), user.getWorkAddress(), existingUser, AddressType.WORK);
                     
-                    return ResponseEntity.ok(userRepository.save(existingUser));
+                    // Sanitize the updated user input for XSS prevention
+                    User sanitizedUser = userService.sanitizeUserInput(existingUser);
+                    return ResponseEntity.ok(userRepository.save(sanitizedUser));
                 })
                 .orElse(ResponseEntity.status(404).body("User not found"));
     }
