@@ -198,7 +198,22 @@ function editUser(user) {
 
       if (!isDataValid(formData)) return;
 
-      showUserInfo(user.id); // Show the user info page after updating
+      $.ajax({
+        url: "http://localhost:8080/api/user/" + user.id,
+        type: "PUT",
+        contentType: "application/json",
+        data: JSON.stringify(formData),
+        success: function () {
+          showUserInfo(user.id); // Refresh the user info after update
+        },
+        error: function (xhr) {
+          console.log(xhr);
+          popInfoMessage(
+            "Error updating user: " + xhr.responseText,
+            "Error " + xhr.status
+          );
+        },
+      });
     });
   });
 }
