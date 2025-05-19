@@ -27,3 +27,8 @@ body {
 td:hover {
   cursor: pointer;
 }
+
+.edit-form {
+  width: 60%;
+  height: 50%;
+}

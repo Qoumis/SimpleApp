@@ -4,13 +4,7 @@
 function registerUser() {
   history.pushState({}, "", "/register");
   $("#app").load("/pages/register-user.html", function () {
-    $("#birthdate").datepicker({
-      dateFormat: "yy-mm-dd",
-      changeYear: true,
-      changeMonth: true,
-      yearRange: "1900:" + (new Date().getFullYear() - 18),
-      defaultDate: new Date(new Date().getFullYear() - 18, 0, 1),
-    });
+    initializeDatePicker();
   });
 }
 
@@ -18,42 +12,15 @@ $(document).on("submit", "#registration-form", function (event) {
   event.preventDefault();
 
   let formData = {
-    firstName: $("#firstName").val(),
-    lastName: $("#lastName").val(),
+    firstName: $("#firstName").val().trim(),
+    lastName: $("#lastName").val().trim(),
     gender: $("#gender").val(),
     birthDate: $("#birthdate").val(),
-    homeAddress: $("#homeAddress").val(),
-    workAddress: $("#workAddress").val(),
+    homeAddress: $("#homeAddress").val().trim(),
+    workAddress: $("#workAddress").val().trim(),
   };
 
-  if (!formData.firstName.trim()) {
-    popInfoMessage("Please enter a first name to continue!");
-    return;
-  }
-  if (!formData.lastName.trim()) {
-    popInfoMessage("Please enter a last name");
-    return;
-  }
-  if (!formData.gender) {
-    popInfoMessage("Please select a gender to continue!");
-    return;
-  }
-
-  if (!isValidDate(formData.birthDate)) {
-    popInfoMessage("Please enter a valid date in the format YYYY-MM-DD!");
-    return;
-  }
-
-  if (!formData.homeAddress.trim()) {
-    formData.homeAddress = null;
-  } else {
-    formData.homeAddress = { type: "HOME", fullAddress: formData.homeAddress };
-  }
-  if (!formData.workAddress.trim()) {
-    formData.workAddress = null;
-  } else {
-    formData.workAddress = { type: "WORK", fullAddress: formData.workAddress };
-  }
+  if (!isDataValid(formData)) return;
 
   //all checks passed, send the data to the server
   $.ajax({
@@ -74,6 +41,41 @@ $(document).on("submit", "#registration-form", function (event) {
     },
   });
 });
+
+// used to validate the form data before sending it to the server
+// used both on registration and edit user
+function isDataValid(formData) {
+  if (!formData.firstName) {
+    popInfoMessage("Please enter a first name to continue!");
+    return false;
+  }
+  if (!formData.lastName) {
+    popInfoMessage("Please enter a last name");
+    return false;
+  }
+  if (!formData.gender) {
+    popInfoMessage("Please select a gender to continue!");
+    return false;
+  }
+
+  if (!isValidDate(formData.birthDate)) {
+    popInfoMessage("Please enter a valid date in the format YYYY-MM-DD!");
+    return false;
+  }
+
+  if (!formData.homeAddress) {
+    formData.homeAddress = null;
+  } else {
+    formData.homeAddress = { type: "HOME", fullAddress: formData.homeAddress };
+  }
+  if (!formData.workAddress) {
+    formData.workAddress = null;
+  } else {
+    formData.workAddress = { type: "WORK", fullAddress: formData.workAddress };
+  }
+
+  return true;
+}
 
 // This function checks if the date string is in the format YYYY-MM-DD
 function isValidDate(dateString) {
@@ -141,12 +143,15 @@ function showUserInfo(id) {
         if (data.gender === "MALE") $("#gender").html("Male");
         else $("#gender").html("Female");
 
-        $("#birthDate").html(data.birthDate);
+        $("#birthdate").html(data.birthDate);
 
-        if (data.homeAddress)
-          $("#homeAddress").html(data.homeAddress.fullAddress);
-        if (data.workAddress)
-          $("#workAddress").html(data.workAddress.fullAddress);
+        $("#homeAddress").html(data.homeAddress?.fullAddress || "");
+        $("#workAddress").html(data.workAddress?.fullAddress || "");
+
+        $("#edit-btn").off("click");
+        $("#edit-btn").on("click", function () {
+          editUser(data);
+        });
       },
       error: function (xhr) {
         popInfoMessage(
@@ -155,6 +160,45 @@ function showUserInfo(id) {
           true
         );
       },
+    });
+  });
+}
+
+function editUser(user) {
+  history.pushState({}, "", `/user/${user.id}/edit`);
+  $("#app").load("/pages/edit-user.html", function () {
+    $("#firstName").val(user.firstName);
+    $("#lastName").val(user.lastName);
+    $("#gender").val(user.gender);
+    $("#birthdate").val(user.birthDate);
+    initializeDatePicker();
+
+    $("#homeAddress").val(user.homeAddress?.fullAddress || "");
+    $("#workAddress").val(user.workAddress?.fullAddress || "");
+
+    // Handle the cancel button click
+    $("#cancel-btn").off("click");
+    $("#cancel-btn").on("click", function () {
+      window.history.back();
+    });
+
+    // Handle the update button click (submit the form)
+    $(document).on("submit", "#update-form", function (event) {
+      event.preventDefault();
+
+      let formData = {
+        id: user.id,
+        firstName: $("#firstName").val().trim(),
+        lastName: $("#lastName").val().trim(),
+        gender: $("#gender").val(),
+        birthDate: $("#birthdate").val(),
+        homeAddress: $("#homeAddress").val().trim(),
+        workAddress: $("#workAddress").val().trim(),
+      };
+
+      if (!isDataValid(formData)) return;
+
+      showUserInfo(user.id); // Show the user info page after updating
     });
   });
 }
@@ -208,5 +252,16 @@ function popInfoMessage(message, title = "Error", returnToHome = false) {
     if (returnToHome) {
       loadHomePaege();
     }
+  });
+}
+
+// Initialize the date picker for the birthdate input field
+function initializeDatePicker() {
+  $("#birthdate").datepicker({
+    dateFormat: "yy-mm-dd",
+    changeYear: true,
+    changeMonth: true,
+    yearRange: "1900:" + (new Date().getFullYear() - 18),
+    defaultDate: new Date(new Date().getFullYear() - 18, 0, 1),
   });
 }
