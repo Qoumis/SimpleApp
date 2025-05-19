@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import com.Qoumis.SimpleApp.model.User;
@@ -53,14 +54,14 @@ public class ApiController {
 
     //Register a new user
     @PostMapping("/user/add")
-    public User addUser(@RequestBody User user) {
+    public User addUser(@Valid @RequestBody User user) {
 
         return userRepository.save(user);
     }
 
     //Update an existing user
     @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable Long id){
+    public ResponseEntity<?> updateUser(@Valid @RequestBody User user, @PathVariable Long id){
 
         return userRepository.findById(id).<ResponseEntity<?>>
                 map(existingUser ->{

@@ -10,6 +10,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinColumn;
 
@@ -25,9 +27,11 @@ public class User {
     private Long id;
     
     @Column(nullable = false)
+    @NotBlank(message = "First name is required")
     private String firstName;
    
     @Column(nullable = false)
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
     @Enumerated(EnumType.STRING)
@@ -35,6 +39,7 @@ public class User {
     private Gender gender;
 
     @Column(nullable = false)
+    @NotNull(message = "Birth date is required")
     private LocalDate birthDate;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
