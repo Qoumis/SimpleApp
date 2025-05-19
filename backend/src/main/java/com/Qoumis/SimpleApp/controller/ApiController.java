@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.Qoumis.SimpleApp.repository.UserRepository;
+import com.Qoumis.SimpleApp.service.UserService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import com.Qoumis.SimpleApp.model.User;
 import com.Qoumis.SimpleApp.model.UserNameDTO;
+import com.Qoumis.SimpleApp.model.enums.AddressType;
 import com.Qoumis.SimpleApp.model.Address;
 
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,9 @@ public class ApiController {
     
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
     //Get all users (all fields)
     @GetMapping("/user/all")
@@ -70,21 +75,8 @@ public class ApiController {
                     existingUser.setGender(user.getGender());
                     existingUser.setBirthDate(user.getBirthDate());
 
-                    // Update home address
-                    Address oldHome = existingUser.getHomeAddress();
-                    Address newHome = user.getHomeAddress();
-                    if(oldHome != null && newHome != null) // Update existing home address
-                        oldHome.setFullAddress(newHome.getFullAddress()); 
-                    else
-                        existingUser.setHomeAddress(newHome); //replace old (null) with new or clear if new is null
-
-                    // Update work address
-                    Address oldWork = existingUser.getWorkAddress();
-                    Address newWork = user.getWorkAddress();
-                    if(oldWork != null && newWork != null) 
-                        oldWork.setFullAddress(newWork.getFullAddress());
-                    else
-                        existingUser.setWorkAddress(newWork);
+                    userService.addressUpdater(existingUser.getHomeAddress(), user.getHomeAddress(), existingUser, AddressType.HOME);
+                    userService.addressUpdater(existingUser.getWorkAddress(), user.getWorkAddress(), existingUser, AddressType.WORK);
                     
                     return ResponseEntity.ok(userRepository.save(existingUser));
                 })
